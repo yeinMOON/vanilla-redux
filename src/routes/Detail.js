@@ -1,13 +1,19 @@
 import React from "react";
 import { connect } from "react-redux";
-function Detail({ toDo }) {
+import { Link } from "react-router-dom";
+import { actionCreators } from "../store";
+
+function Detail({ toDo, onBtnClick }) {
   return (
     <>
-      <h1>{toDo?.text}</h1>
-      <h5>Created at: {toDo?.id}</h5>
+      <h1>{toDo.text}</h1>
+      <h5>Created at: {toDo.id}</h5>
+      <button onClick={onBtnClick}>DEL</button>
+      <Link to="/">
+        <button>Home</button>
+      </Link>
     </>
   );
-  // Detail 페이지에서 Reload하면 기존 state가 모두 초기화되어 toDo가 undefined가 되는데, 이럴 때 오류대신 빈 화면을 보여주기 위해 ?를 붙인다
 }
 
 function mapStateToProps(state, ownProps) {
@@ -18,4 +24,14 @@ function mapStateToProps(state, ownProps) {
   } = ownProps;
   return { toDo: state.find((toDo) => toDo.id === parseInt(id)) };
 }
-export default connect(mapStateToProps)(Detail);
+
+function mapDispatchToProps(dispatch, ownProps) {
+  return {
+    onBtnClick: () => {
+      ownProps.history.push("/");
+      const id = ownProps.match.params.id;
+      dispatch(actionCreators.deleteToDo(id));
+    },
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Detail);
