@@ -1,9 +1,20 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useHistory, useParams } from "react-router-dom";
 import { actionCreators } from "../store";
 
-function Detail({ toDo, onBtnClick }) {
+function Detail() {
+  const toDos = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { id } = useParams();
+
+  const toDo = toDos.find((toDo) => toDo.id === parseInt(id));
+  const onBtnClick = () => {
+    history.push("/");
+    dispatch(actionCreators.deleteToDo(id));
+  };
+
   return (
     <>
       <h1>{toDo.text}</h1>
@@ -16,22 +27,4 @@ function Detail({ toDo, onBtnClick }) {
   );
 }
 
-function mapStateToProps(state, ownProps) {
-  const {
-    match: {
-      params: { id },
-    },
-  } = ownProps;
-  return { toDo: state.find((toDo) => toDo.id === parseInt(id)) };
-}
-
-function mapDispatchToProps(dispatch, ownProps) {
-  return {
-    onBtnClick: () => {
-      ownProps.history.push("/");
-      const id = ownProps.match.params.id;
-      dispatch(actionCreators.deleteToDo(id));
-    },
-  };
-}
-export default connect(mapStateToProps, mapDispatchToProps)(Detail);
+export default Detail;
